@@ -5,6 +5,7 @@ import { map, catchError } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { User } from '../../user/models/user.model';
 import { UserRole } from 'src/app/enums/user-role.enum';
+import { environment } from 'src/environment/environment.prod';
 
 interface RawEnrollment {
   username: string;
@@ -15,7 +16,7 @@ interface RawEnrollment {
   providedIn: 'root'
 })
 export class UserService {
-  private baseUrl = 'http://localhost:8084/users';
+  private baseUrl = '${environment.apiUrl}/users';
 
   constructor(
     private http: HttpClient,

@@ -10,12 +10,13 @@ import { Store } from '@ngrx/store';
 import { selectEnrollments } from '../../store/course/course.selectors';
 import { AppState } from '../../store/app.state';
 import { loadEnrollments } from '../../store/course/course.actions';
+import { environment } from 'src/environment/environment.prod';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CourseService {
-  private apiUrl = 'http://localhost:8084';
+  private apiUrl = '${environment.apiUrl}';
   private enrollmentCache: Enrollment[] | null = null;
   private enrollmentRefresh$ = new BehaviorSubject<void>(undefined);
   private enrollingCourses = new Set<number>();

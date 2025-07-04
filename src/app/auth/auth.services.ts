@@ -17,7 +17,7 @@ export interface UserDetails {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8084';
+  private apiUrl = '${environment.apiUrl}';
   private authStateSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
 
   constructor(
