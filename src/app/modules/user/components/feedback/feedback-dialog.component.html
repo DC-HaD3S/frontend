@@ -1,0 +1,49 @@
+<h2 mat-dialog-title>Submit Feedback</h2>
+<mat-dialog-content>
+  <form [formGroup]="feedbackForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="fill">
+      <mat-label>Select Course</mat-label>
+      <mat-select formControlName="courseId" required>
+        <mat-option *ngFor="let course of enrolledCourses" [value]="course.courseId">
+          {{ course.courseName }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="feedbackForm.get('courseId')?.touched && feedbackForm.get('courseId')?.invalid">
+        Please select a course.
+      </mat-error>
+    </mat-form-field>
+
+    <div class="star-rating-container">
+<mat-form-field appearance="fill">
+  <mat-label>Rating (1 to 5)</mat-label>
+  <input
+    matInput
+    type="number"
+    formControlName="rating"
+    min="1"
+    max="5"
+    required
+  />
+  <mat-error *ngIf="feedbackForm.get('rating')?.touched && feedbackForm.get('rating')?.invalid">
+    Rating must be between 1 and 5.
+  </mat-error>
+</mat-form-field>
+
+    </div>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Comments</mat-label>
+      <textarea matInput formControlName="comments" rows="3" required></textarea>
+      <mat-error *ngIf="feedbackForm.get('comments')?.touched && feedbackForm.get('comments')?.invalid">
+        Comments are required (min 10 characters).
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="feedbackForm.invalid">
+    Submit
+  </button>
+</mat-dialog-actions>

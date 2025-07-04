@@ -1,0 +1,120 @@
+{
+  "courses": [
+    {
+      "id": "1",
+      "title": "Introduction to Angular",
+      "body": "Master Angular fundamentals, including components, directives, and services to build dynamic web applications.",
+      "imageUrl": "https://blog.solguruz.com/wp-content/uploads/2023/11/Top-Angular-Frameworks-for-Web-App-Development.png",
+      "price": 1050
+    },
+    {
+      "id": "2",
+      "title": "JavaScript Essentials",
+      "body": "Learn JavaScript basics like variables, loops, and functions to kickstart your programming journey.",
+      "imageUrl": "https://miro.medium.com/v2/resize:fit:1400/1*a3BHGbuAMpOaZj6HkTrNqA.png",
+      "price": 0
+    },
+    {
+      "id": "3",
+      "title": "Advanced TypeScript",
+      "body": "Explore TypeScript’s advanced features, including generics, interfaces, and type inference for robust code.",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTU-a7wFsQ0TqBnyvDwrAar9VklF8MLagTOag&s",
+      "price": 1079
+    },
+    {
+      "id": "4",
+      "title": "Full-Stack Web Development",
+      "body": "Build full-stack apps with HTML, CSS, JavaScript, Node.js, and MongoDB in this comprehensive bootcamp.",
+      "imageUrl": "https://jaro-website.s3.ap-south-1.amazonaws.com/2024/07/full-stack-web-developer.png",
+      "price": 1199
+    },
+    {
+      "id": "5",
+      "title": "Responsive Web Design",
+      "body": "Create mobile-friendly websites using CSS Flexbox, Grid, and responsive design techniques.",
+      "userId": 104,
+      "imageUrl": "https://www.searchenginejournal.com/wp-content/uploads/2021/10/responsive-web-design-1-61f01c4b64c5f-sej.png",
+      "price": 0
+    },
+    {
+      "id": "6",
+      "title": "React for Beginners",
+      "body": "Get started with React, learning components, hooks, and state management for modern UIs.",
+      "userId": 102,
+      "imageUrl": "https://reactjs.org/logo-og.png",
+      "price": 1059
+    },
+    {
+      "id": "7",
+      "title": "Node.js and Express",
+      "body": "Build scalable backend APIs with Node.js and Express, including RESTful services and middleware.",
+      "userId": 105,
+      "imageUrl": "https://www.loginradius.com/assets/blog/engineering/node-http-module-server/coverImage.webp",
+      "price": 1089
+    },
+    {
+      "id": "8",
+      "title": "Python for Data Science",
+      "body": "Learn Python for data analysis, visualization, and machine learning with libraries like Pandas and NumPy.",
+      "userId": 106,
+      "imageUrl": "https://media.geeksforgeeks.org/wp-content/cdn-uploads/20230318230239/Python-Data-Science-Tutorial.jpg",
+      "price": 0
+    },
+    {
+      "id": "9",
+      "title": "UI/UX Design Fundamentals",
+      "body": "Understand user-centered design principles, wireframing, and prototyping for intuitive interfaces.",
+      "userId": 104,
+      "imageUrl": "https://dadofad.com/blog/wp-content/uploads/2024/01/Banner.jpg",
+      "price": 1069
+    },
+    {
+      "id": "10",
+      "title": "Cloud Computing with AWS",
+      "body": "Explore AWS services like EC2, S3, and Lambda to build and deploy cloud-based applications.",
+      "userId": 107,
+      "imageUrl": "https://images.squarespace-cdn.com/content/v1/60cfd646701da4034512a1c5/ca3d678a-cbfc-4c9c-bc79-9d3be9fb907e/AWS-Cloud.png?format=2500w",
+      "price": 1149
+    },
+    {
+      "id": "11",
+      "title": "SQL and Database Management",
+      "body": "Master SQL queries, database design, and management with relational databases like MySQL.",
+      "userId": 103,
+      "imageUrl": "https://media.licdn.com/dms/image/v2/D5612AQG6MIemt0irBQ/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1683287402378?e=2147483647&v=beta&t=6JS4kOXLhMu_Wo63u9P2JwvnzSfz7Cz8yLVcYGN8eJI ",
+      "price": 0
+    },
+    {
+      "id": "12",
+      "title": "Cybersecurity Basics",
+      "body": "Learn key cybersecurity concepts, including encryption, network security, and ethical hacking.",
+      "userId": 108,
+      "imageUrl": "https://media.licdn.com/dms/image/v2/D5612AQELXhYhwllECA/article-cover_image-shrink_600_2000/article-cover_image-shrink_600_2000/0/1696695533971?e=2147483647&v=beta&t=zoVNOcugSFrFFq2cXnIjHV5s8x9gINxOjK-evWTRqAg",
+      "price": 1099
+    },
+    {
+      "id": "13",
+      "title": "Machine Learning Fundamentals",
+      "body": "Dive into machine learning with algorithms, model training, and tools like TensorFlow and Scikit-learn.",
+      "userId": 106,
+      "imageUrl": "https://miro.medium.com/v2/resize:fit:1400/0*gSNmDGBuPrx8i0ES.jpeg",
+      "price": 1129
+    },
+    {
+      "id": "14",
+      "title": "Vue.js for Web Development",
+      "body": "Build interactive web apps with Vue.js, focusing on components, directives, and Vue Router.",
+      "userId": 102,
+      "imageUrl": "https://redwerk.com/wp-content/uploads/2019/11/cover_Vue.png",
+      "price": 0
+    },
+    {
+      "id": "15",
+      "title": "DevOps with Docker and Kubernetes",
+      "body": "Learn containerization and orchestration with Docker and Kubernetes for efficient app deployment.",
+      "userId": 107,
+      "imageUrl": "https://i0.wp.com/sailssoftware.com/wp-content/uploads/2023/02/www.sailssoftware.comA1_.png?fit=1280%2C720&ssl=1",
+      "price": 1159
+    }
+  ]
+}

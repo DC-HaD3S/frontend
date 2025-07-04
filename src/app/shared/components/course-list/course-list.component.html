@@ -1,0 +1,86 @@
+<div class="course-grid-container">
+  <div class="search-sort-container">
+    <div class="sort-field">
+      <mat-form-field appearance="outline">
+        <mat-select [(ngModel)]="sortCriteria" (selectionChange)="sortCourses()" placeholder="Sort by">
+          <mat-option value="title-asc">Title A-Z</mat-option>
+          <mat-option value="title-desc">Title Z-A</mat-option>
+          <mat-option value="price-asc">Price Low-High</mat-option>
+          <mat-option value="price-desc">Price High-Low</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="search-field">
+      <mat-form-field appearance="outline">
+        <input matInput placeholder="Search" [(ngModel)]="searchQuery" (input)="filterCourses()">
+      </mat-form-field>
+    </div>
+  </div>
+
+
+
+  <div *ngIf="error$ | async as error" class="error">{{ error }}</div>
+  <div *ngIf="isLoading" class="loading">Loading courses...</div>
+  <div *ngIf="!isLoading && !hasCourses && !(error$ | async)" class="no-courses">
+    No courses available at the moment.
+  </div>
+
+  <div class="course-grid" *ngIf="hasCourses">
+    <mat-card *ngFor="let course of pagedCourses; trackBy: trackByCourseId" class="course-card">
+      <mat-card-header>
+        <mat-card-title>{{ course.title }}</mat-card-title>
+      </mat-card-header>
+
+      <img mat-card-image [src]="course.imageUrl" [alt]="course.title" *ngIf="course.imageUrl" />
+
+      <mat-card-content>
+        <p>{{ course.body | slice: 0:100 }}...</p>
+
+        <div *ngIf="course.id != null" class="average-rating">
+          <span>Average Rating:</span>
+          <span class="star-rating">
+            <ng-container *ngIf="getAverageRating$(course.id) | async as rating; else noRating">
+              <ng-container *ngFor="let i of [1,2,3,4,5]">
+                <fa-icon [icon]="getStarIcon(rating, i)" [ngStyle]="{ color: getStarColor(rating, i) }"></fa-icon>
+              </ng-container>
+              <span>({{ rating | number:'1.1-1' }}/5)</span>
+            </ng-container>
+            <ng-template #noRating>
+              <ng-container *ngFor="let i of [1,2,3,4,5]">
+                <fa-icon [icon]="emptyStar" style="color: #d1d5db;"></fa-icon>
+              </ng-container>
+              <span>(0/5)</span>
+            </ng-template>
+          </span>
+        </div>
+
+        <p class="price">
+          Price: {{
+          course.price != null
+          ? (course.price === 0 ? 'Free' : 'Rs.' + course.price)
+          : 'N/A'
+          }}
+        </p>
+      </mat-card-content>
+
+      <mat-card-actions *ngIf="course.id != null">
+        <ng-container *ngIf="!(isAdmin$ | async)">
+          <ng-container *ngIf="(getIsEnrolled$(course.id) | async); else notEnrolled">
+            <button mat-raised-button disabled>Enrolled</button>
+          </ng-container>
+          <ng-template #notEnrolled>
+            <button mat-raised-button color="primary" (click)="openApplyDialog(course)">Apply</button>
+          </ng-template>
+        </ng-container>
+        <button mat-stroked-button color="primary" (click)="openDetailsDialog(course)">View Details</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <div class="pagination-controls" *ngIf="totalPages > 1">
+    <button mat-button (click)="prevPage()" [disabled]="currentPage === 0">Previous</button>
+    <span>Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+    <button mat-button (click)="nextPage()" [disabled]="currentPage >= totalPages - 1">Next</button>
+  </div>
+</div>

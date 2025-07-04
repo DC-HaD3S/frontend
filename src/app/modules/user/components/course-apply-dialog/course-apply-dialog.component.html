@@ -1,0 +1,23 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Apply for {{ data.course.title }}</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="applyForm" (ngSubmit)="onSubmit()">
+      <p>Enrolling as: {{ username || 'Not logged in' }}</p>
+      <p *ngIf="data.course.price !== 0">Price: Rs. {{ data.course.price }}</p>
+      <p *ngIf="data.course.price === 0">Price: Free</p>
+      <mat-checkbox formControlName="confirmation">I confirm my enrollment</mat-checkbox>
+      <mat-error *ngIf="applyForm.get('confirmation')?.touched && applyForm.get('confirmation')?.invalid">
+        You must confirm to enroll.
+      </mat-error>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" type="submit" [disabled]="applyForm.invalid || !username || isSubmitting">
+          <span class="spinner" *ngIf="isSubmitting"></span>
+          <span *ngIf="!isSubmitting">Enroll</span>
+        </button>
+        <button mat-raised-button color="warn" (click)="onCancel()" [disabled]="isSubmitting">Cancel</button>
+      </mat-card-actions>
+    </form>
+  </mat-card-content>
+</mat-card>

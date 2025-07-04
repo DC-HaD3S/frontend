@@ -1,0 +1,205 @@
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px;
+  background-color: #fafafa;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 32px;
+}
+
+.add-course-button {
+  padding: 12px 24px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.add-course-button:hover {
+  transform: scale(1.04);
+  background-color: #1565c0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.error-message {
+  color: #c62828;
+  font-size: 1rem;
+  margin-bottom: 24px;
+  padding: 12px;
+  background-color: #ffcccb;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.table-style {
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.header-row {
+  background-color: #e8ecef;
+}
+
+.header-cell {
+  font-weight: 700;
+  color: #444;
+  font-size: 1.1rem;
+  padding: 14px;
+}
+
+.header-cell.title-column {
+  min-width: 250px;
+}
+
+.table-row {
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.table-row:hover {
+  background-color: #f1f5f9;
+  transform: translateY(-2px);
+}
+
+.cell {
+  color: #555;
+  font-size: 1rem;
+  padding: 14px;
+  white-space: normal;
+  overflow-wrap: break-word;
+  line-height: 1.4;
+}
+
+.cell.title-column {
+  min-width: 250px;
+}
+
+.course-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+}
+
+.course-image:hover {
+  transform: scale(1.1);
+}
+
+.action-button {
+  margin: 0 8px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.action-button:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.dialog-container {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  width: 500px;
+}
+
+.dialog-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  margin: 0 0 15px 0;
+}
+
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.form-field {
+  width: 100%;
+}
+
+.form-field.course-title-field {
+  margin-top: 20px;
+}
+
+.form-field mat-label {
+  color: #555;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.form-field input,
+.form-field textarea {
+  font-size: 1rem;
+  color: #333;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  padding: 6px;
+}
+
+.form-field textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-field mat-error {
+  font-size: 0.8rem;
+  color: #c62828;
+  font-weight: 500;
+}
+
+.form-field mat-hint {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 15px;
+  margin-top: 10px;
+}
+
+.submit-button,
+.cancel-button {
+  padding: 8px 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 4px;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 32px;
+  margin-top: 40px;
+  text-align: center;
+  letter-spacing: 0.75px;
+  text-transform: uppercase;
+}

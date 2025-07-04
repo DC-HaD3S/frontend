@@ -1,0 +1,28 @@
+<div class="feedback-list-container">
+  <h2>Feedback List</h2>
+
+<div class="sort-controls">
+  <label>Sort By:</label>
+  <select [(ngModel)]="sortField" (change)="sortFeedbacks()">
+    <option value="courseName">Course Name</option>
+    <option value="rating">Rating</option>
+    <option value="username">Username</option>
+  </select>
+
+  <button (click)="toggleSortOrder()">
+    {{ sortOrder === 'asc' ? '⬆️ Ascending' : '⬇️ Descending' }}
+  </button>
+</div>
+
+  <div *ngFor="let feedback of feedbacks" class="feedback-item">
+    <app-details-card
+      [title]="'Feedback ' + feedback.id"
+      [details]="[
+        'User: ' + feedback.username,
+        'Course name: ' + feedback.courseName,
+        'Rating: ' + feedback.rating,
+        'Comments: ' + feedback.comments
+      ]">
+    </app-details-card>
+  </div>
+</div>

@@ -1,0 +1,128 @@
+<div class="container">
+  <h2 class="title">Manage Courses</h2>
+  
+  <div class="button-container">
+    <button mat-raised-button color="primary" (click)="openAddCourse()" class="add-course-button">
+      <mat-icon>add</mat-icon> Add New Course
+    </button>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+<mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 table-style">
+  <ng-container matColumnDef="title">
+    <mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">Title</mat-header-cell>
+    <mat-cell *matCellDef="let course" class="cell"> {{ course.title }} </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="body">
+    <mat-header-cell *matHeaderCellDef class="header-cell">Description</mat-header-cell>
+    <mat-cell *matCellDef="let course" class="cell"> {{ course.body | slice:0:100 }}{{ course.body.length > 100 ? '...' : '' }} </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="imageUrl">
+    <mat-header-cell *matHeaderCellDef class="header-cell">Image</mat-header-cell>
+    <mat-cell *matCellDef="let course" class="cell">
+      <img *ngIf="course.imageUrl" [src]="course.imageUrl" alt="Course Image" class="course-image">
+    </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="price">
+    <mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">Price</mat-header-cell>
+    <mat-cell *matCellDef="let course" class="cell"> Rs.{{ course.price | number:'1.2-2' }} </mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="actions">
+    <mat-header-cell *matHeaderCellDef class="header-cell">Actions</mat-header-cell>
+    <mat-cell *matCellDef="let course" class="cell">
+      <button mat-icon-button color="accent" (click)="openEditCourseDialog(course)" class="action-button">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" (click)="openDeleteConfirmDialog(course)" class="action-button">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </mat-cell>
+  </ng-container>
+  <mat-header-row *matHeaderRowDef="displayedColumns" class="header-row"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></mat-row>
+</mat-table>
+<mat-paginator
+  [pageSize]="8"
+  [pageSizeOptions]="[8, 16, 24]"
+  showFirstLastButtons
+  aria-label="Course Paginator"
+></mat-paginator>
+
+<ng-template #addCourseDialog>
+  <div class="dialog-container">
+    <h2 mat-dialog-title class="dialog-title">Add New Course</h2>
+    <mat-dialog-content class="dialog-content">
+      <form class="form-group">
+        <mat-form-field appearance="outline" class="form-field course-title-field">
+          <mat-label>Course Title</mat-label>
+          <input matInput [(ngModel)]="newCourse.title" name="title" placeholder="Enter course title" required>
+          <mat-error *ngIf="!newCourse.title">Title is required</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Course Description</mat-label>
+          <textarea matInput [(ngModel)]="newCourse.body" name="body" placeholder="Enter course description" rows="4" required></textarea>
+          <mat-error *ngIf="!newCourse.body">Description is required</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Image URL</mat-label>
+          <input matInput [(ngModel)]="newCourse.imageUrl" name="imageUrl" placeholder="Enter image URL">
+          <mat-hint>Optional: Provide a URL for the course image</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Price</mat-label>
+          <input matInput type="number" [(ngModel)]="newCourse.price" name="price" placeholder="Enter price" required>
+          <mat-error *ngIf="!newCourse.price && newCourse.price !== 0">Price is required</mat-error>
+        </mat-form-field>
+      </form>
+    </mat-dialog-content>
+    <mat-dialog-actions class="dialog-actions">
+      <button mat-raised-button color="primary" (click)="addCourse()" [disabled]="!newCourse.title || !newCourse.body || newCourse.price == null" class="submit-button">
+        <mat-icon>save</mat-icon> Submit
+      </button>
+      <button mat-raised-button mat-dialog-close color="warn" (click)="cancelEdit()" class="cancel-button">
+        <mat-icon>close</mat-icon> Cancel
+      </button>
+    </mat-dialog-actions>
+  </div>
+</ng-template>
+
+<ng-template #editCourseDialog>
+  <div class="dialog-container">
+    <h2 mat-dialog-title class="dialog-title">Edit Course</h2>
+    <mat-dialog-content class="dialog-content">
+      <form class="form-group" *ngIf="editedCourse">
+        <mat-form-field appearance="outline" class="form-field course-title-field">
+          <mat-label>Course Title</mat-label>
+          <input matInput [(ngModel)]="editedCourse.title" name="title" placeholder="Enter course title" required>
+          <mat-error *ngIf="!editedCourse.title">Title is required</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Course Description</mat-label>
+          <textarea matInput [(ngModel)]="editedCourse.body" name="body" placeholder="Enter course description" rows="4" required></textarea>
+          <mat-error *ngIf="!editedCourse.body">Description is required</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Image URL</mat-label>
+          <input matInput [(ngModel)]="editedCourse.imageUrl" name="imageUrl" placeholder="Enter image URL">
+          <mat-hint>Optional: Provide a URL for the course image</mat-hint>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Price</mat-label>
+          <input matInput type="number" [(ngModel)]="editedCourse.price" name="price" placeholder="Enter price" required>
+          <mat-error *ngIf="!editedCourse.price && editedCourse.price !== 0">Price is required</mat-error>
+        </mat-form-field>
+      </form>
+    </mat-dialog-content>
+    <mat-dialog-actions class="dialog-actions">
+      <button mat-raised-button color="primary" (click)="updateCourse()" [disabled]="!editedCourse?.title || !editedCourse?.body || editedCourse?.price == null" class="submit-button">
+        <mat-icon>save</mat-icon> Save
+      </button>
+      <button mat-raised-button mat-dialog-close color="warn" (click)="cancelEdit()" class="cancel-button">
+        <mat-icon>close</mat-icon> Cancel
+      </button>
+    </mat-dialog-actions>
+  </div>
+</ng-template>

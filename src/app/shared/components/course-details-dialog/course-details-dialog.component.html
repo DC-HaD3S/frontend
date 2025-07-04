@@ -1,0 +1,146 @@
+<div class="page-container" *ngIf="course">
+  <h1>{{ course.title || 'No Title' }}</h1>
+  <div class="content-container">
+    <div class="image-container" *ngIf="course.imageUrl; else noImage">
+      <img [src]="course.imageUrl" [alt]="course.title || 'Course Image'" class="course-image" loading="lazy" />
+    </div>
+    <ng-template #noImage>
+      <div class="no-image-placeholder">No Image Available</div>
+    </ng-template>
+    <div class="text-container">
+      <p class="description">{{ course.body || 'No description available.' }}</p>
+      <p class="price">Price: {{ course.price != null ? (course.price === 0 ? 'Free' : 'Rs.' + course.price) : 'N/A' }}</p>
+      <p class="average-rating" *ngIf="averageRating != null">
+        Average Rating:
+        <span class="star-rating">
+          <ng-container *ngFor="let i of [1,2,3,4,5]">
+            <ng-container *ngIf="averageRating >= i">
+              <span class="star filled text-warning">
+                <i class="bi bi-star-fill text-warning"></i>
+              </span>
+            </ng-container>
+            <ng-container *ngIf="averageRating >= i - 0.5 && averageRating < i">
+              <span class="star half text-warning">
+                <i class="bi bi-star-half text-warning"></i>
+              </span>
+            </ng-container>
+            <ng-container *ngIf="averageRating < i - 0.5">
+              <span class="star text-warning">
+                <i class="bi bi-star text-warning"></i>
+              </span>
+            </ng-container>
+          </ng-container>
+        </span>
+        ({{ averageRating | number:'1.1-1' }}/5)
+      </p>
+    </div>
+  </div>
+  <div class="actions-container">
+    <button mat-raised-button class="back-button" (click)="goBack()">Back to Courses</button>
+    
+    <ng-container *ngIf="(isEnrolled$ | async); else notEnrolled">
+      <button mat-raised-button color="accent" (click)="openFeedbackDialog()">
+        Submit Feedback
+      </button>
+      <button mat-raised-button color="primary" disabled>Enrolled</button>
+    </ng-container>
+    
+    <ng-template #notEnrolled>
+      <button *ngIf="(canApply$ | async)" 
+              mat-raised-button 
+              color="warn" 
+              (click)="applyForCourse()">
+        Apply
+      </button>
+    </ng-template>
+  </div>
+
+  <div class="feedback-table-container">
+    <h2>Feedbacks</h2>
+    <div class="search-and-sort-controls">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search by Username</mat-label>
+        <input matInput placeholder="Enter username" [(ngModel)]="searchTerm" (input)="applyFilter()" aria-label="Search feedback by username">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      <div class="sort-controls">
+        <mat-form-field appearance="outline">
+          <mat-label>Sort By</mat-label>
+          <mat-select [(value)]="sortField" (selectionChange)="sortFeedbacks()">
+            <mat-option value="username">Username</mat-option>
+            <mat-option value="rating">Rating</mat-option>
+            <mat-option value="comments">Comments</mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+      </div>
+      <button mat-icon-button (click)="toggleSortOrder()"
+          matTooltip="{{ sortOrder === 'asc' ? 'Sort Descending' : 'Sort Ascending' }}"
+          aria-label="Toggle sort order">
+          <mat-icon>{{ sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+        </button>
+    </div>
+    <table mat-table [dataSource]="dataSource" matSort class="mat-table" aria-label="Feedback table">
+      <ng-container matColumnDef="username">
+        <th mat-header-cell *matHeaderCellDef>Username</th>
+        <td mat-cell *matCellDef="let feedback">{{ feedback.username }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="rating">
+        <th mat-header-cell *matHeaderCellDef>Rating</th>
+        <td mat-cell *matCellDef="let feedback" [attr.aria-label]="'Rating: ' + feedback.rating + ' out of 5'">
+          <span class="star-rating">
+            <span *ngFor="let i of [1,2,3,4,5]">
+              <span *ngIf="feedback.rating >= i">
+                <span class="star filled">
+                  <i class="bi bi-star-fill text-warning"></i>
+                </span>
+              </span>
+              <span *ngIf="feedback.rating < i">
+                <span class="star">
+                  <i class="bi bi-star text-warning"></i>
+                </span>
+              </span>
+            </span>
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="comments">
+        <th mat-header-cell *matHeaderCellDef>Comments</th>
+        <td mat-cell *matCellDef="let feedback">{{ feedback.comments }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let feedback">
+          <ng-container *ngIf="(username$ | async) === feedback.username && !(isAdmin$ | async)">
+            <button mat-icon-button color="primary"
+                    (click)="openFeedbackDialog(feedback)"
+                    matTooltip="Edit Feedback"
+                    aria-label="Edit feedback">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn"
+                    (click)="deleteFeedback(feedback.id)"
+                    matTooltip="Delete Feedback"
+                    aria-label="Delete feedback">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </ng-container>
+          <ng-container *ngIf="(isAdmin$ | async)">
+            <button mat-icon-button color="warn"
+                    (click)="deleteFeedback(feedback.id)"
+                    matTooltip="Delete Feedback (Admin)"
+                    aria-label="Delete feedback as admin">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </ng-container>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" tabindex="0"></tr>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+<div class="home-container">
+
+  <div *ngIf="!(role$ | async)">
+    <h1>Welcome to the E-Learning Platform</h1>
+  </div>
+  <app-course-list></app-course-list>
+</div>

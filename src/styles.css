@@ -1,0 +1,40 @@
+
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+.custom-snackbar {
+  border-radius: 8px !important;
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 1rem !important;
+  padding: 12px 20px !important;
+  min-width: 300px !important;
+  display: flex !important;
+  justify-content: center !important;
+  margin-bottom: 20px !important;
+}
+
+.custom-snackbar .mat-snack-bar-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+.custom-snackbar .mat-snack-bar-action:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+.mat-menu-panel {
+  min-width: unset !important;
+  max-width: none !important;
+  width: auto !important;
+}
+.mat-menu-content {
+  padding: 0 !important;
+}
+.mat-menu-item {
+  padding: 0 12px;
+  width: 100%;
+  box-sizing: border-box;
+}

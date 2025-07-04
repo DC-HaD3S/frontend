@@ -1,0 +1,13 @@
+<mat-card class="details-card">
+  <div class="card-header">
+    <span class="card-title">{{ title }}</span>
+    <button *ngIf="showDeleteButton" mat-icon-button color="warn" class="delete-icon-btn" (click)="delete.emit()"
+      aria-label="Delete">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+
+  <mat-card-content>
+    <p *ngFor="let detail of details">{{ detail }}</p>
+  </mat-card-content>
+</mat-card>

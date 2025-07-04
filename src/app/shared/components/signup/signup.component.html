@@ -1,0 +1,48 @@
+<div class="signup-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Create an Account</mat-card-title>
+      <p class="text-muted text-center mb-0">Please fill in your details to sign up</p>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <form class="signup-form" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="fill">
+          <mat-label>Name</mat-label>
+          <input matInput [(ngModel)]="name" name="name" required>
+          <mat-icon matSuffix>person</mat-icon>
+        </mat-form-field>
+        
+        <mat-form-field appearance="fill">
+          <mat-label>Email</mat-label>
+          <input matInput [(ngModel)]="email" name="email" type="email" required>
+          <mat-icon matSuffix>email</mat-icon>
+        </mat-form-field>
+        
+        <mat-form-field appearance="fill">
+          <mat-label>Username</mat-label>
+          <input matInput [(ngModel)]="username" name="username" required>
+          <mat-icon matSuffix>person</mat-icon>
+        </mat-form-field>
+        
+        <mat-form-field appearance="fill">
+          <mat-label>Password</mat-label>
+          <input matInput [(ngModel)]="password" name="password" type="password" required>
+          <mat-icon matSuffix>lock</mat-icon>
+        </mat-form-field>
+        
+        <mat-card-actions>
+          <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+            <span *ngIf="!loading">Sign Up</span>
+            <span *ngIf="loading" class="spinner"></span>
+          </button>
+          <button mat-button type="button" (click)="onCancel()">Cancel</button>
+        </mat-card-actions>
+      </form>
+      
+      <div class="error-container">
+        <p *ngIf="error" class="error">{{ error }}</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

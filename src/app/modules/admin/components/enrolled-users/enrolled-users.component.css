@@ -1,0 +1,91 @@
+.enrolled-users-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #fff;
+}
+
+.enrolled-users-container h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #333;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.mat-elevation-z8 {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  overflow: hidden;
+  background: white;
+}
+
+.mat-table {
+  width: 100%;
+  background: white;
+}
+
+.mat-header-row {
+  background: #f8f9fa;
+  height: 56px;
+}
+
+.mat-header-cell {
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.mat-row {
+  height: auto;
+  min-height: 48px;
+border-bottom: 1px solid #000000 !important;}
+
+.mat-row:hover {
+  background: #f5f5f5;
+}
+
+.mat-cell {
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: #333;
+  border-bottom: none; 
+}
+
+.course-item {
+  padding: 4px 8px;
+  margin: 2px 0;
+  background: #eff7ff;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.mat-column-username {
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .enrolled-users-container {
+    padding: 1rem;
+  }
+  
+  .enrolled-users-container h1 {
+    font-size: 1.5rem;
+  }
+  
+  .mat-table {
+    min-width: 500px;
+  }
+  
+  .enrolled-users-container {
+    overflow-x: auto;
+  }
+  
+  .mat-cell, .mat-header-cell {
+    padding: 8px 12px;
+  }
+}

@@ -1,0 +1,47 @@
+<div class="registered-users-container">
+  <h1>Registered Users</h1>
+
+  <div class="controls-container">
+
+
+    <div class="sort-controls">
+      <label>Sort By:</label>
+      <select [(ngModel)]="sortField" (change)="sortUsers()">
+        <option value="name">Name</option>
+        <option value="username">Username</option>
+        <option value="email">Email</option>
+      </select>
+
+      <button (click)="toggleSortOrder()">
+        {{ sortOrder === 'asc' ? '⬆️ Ascending' : '⬇️ Descending' }}
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <div class="users-grid" *ngIf="!error && pagedUsers.length > 0">
+    <app-details-card
+      *ngFor="let user of pagedUsers"
+      [title]="user.name || user.username"
+      [details]="[
+        'Email: ' + (user.email || 'N/A'),
+        'Username: ' + user.username
+      ]"
+      [showDeleteButton]="true"
+      (delete)="openDeleteDialog(user)">
+    </app-details-card>
+  </div>
+
+  <div *ngIf="!error && pagedUsers.length === 0" class="no-users-message">
+    No users found.
+  </div>
+
+  <div *ngIf="!error && filteredUsers.length > pageSize" class="pagination-container">
+    <button [disabled]="currentPage === 0" (click)="prevPage()">Previous</button>
+    <span>Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+    <button [disabled]="currentPage >= totalPages - 1" (click)="nextPage()">Next</button>
+  </div>
+</div>
