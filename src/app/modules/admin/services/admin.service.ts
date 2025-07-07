@@ -16,8 +16,8 @@ interface RawEnrollment {
   providedIn: 'root'
 })
 export class UserService {
-  private baseUrl = '${environment.apiUrl}/users';
-
+  private baseUrl = environment.apiUrl + '/users';
+  
   constructor(
     private http: HttpClient,
     private snackBar: MatSnackBar

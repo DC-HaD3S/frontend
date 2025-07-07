@@ -6,6 +6,7 @@ import { Store } from '@ngrx/store';
 import { UserRole } from '../enums/user-role.enum';
 import { AppState } from '../store/app.state';
 import { clearRole, setRole, setUserDetails } from '../store/auth/auth.actions';
+import { environment } from 'src/environment/environment.prod';
 
 export interface UserDetails {
   id: number;
@@ -17,7 +18,7 @@ export interface UserDetails {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = '${environment.apiUrl}';
+  private apiUrl = environment.apiUrl;
   private authStateSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
 
   constructor(
