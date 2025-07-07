@@ -16,7 +16,7 @@ import { environment } from 'src/environment/environment.prod';
   providedIn: 'root'
 })
 export class CourseService {
-  private apiUrl = '${environment.apiUrl}';
+  private apiUrl = environment.apiUrl;
   private enrollmentCache: Enrollment[] | null = null;
   private enrollmentRefresh$ = new BehaviorSubject<void>(undefined);
   private enrollingCourses = new Set<number>();
