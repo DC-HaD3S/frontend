@@ -2,10 +2,12 @@
   <span routerLink="/" style="cursor: pointer;">E-Learning Platform</span>
   
   <div class="nav-buttons">
+         <ng-container>
+          <button mat-button (click)="goToAboutUs()">About Us</button>
+        </ng-container>
     <div *ngIf="isAuthenticated$ | async; else notLoggedIn">
       <ng-container *ngIf="role$ | async as role">
         <ng-container *ngIf="role === 'admin'">
-          <button mat-button (click)="goToAboutUs()">About Us</button>
           <button mat-button (click)="goToRegisteredUsers()">Registered Users</button>
           <button mat-button (click)="goToAdminFeedbacks()">Feedbacks</button>
           <button mat-button (click)="goToAdminEnrolled()">Enrolled</button>
@@ -13,7 +15,6 @@
         </ng-container>
         
         <ng-container *ngIf="role === 'user'">
-          <button mat-button (click)="goToAboutUs()">About Us</button>
           <button mat-button (click)="goToUserEnrolled()">Enrolled Courses</button>
         </ng-container>
       </ng-container>
