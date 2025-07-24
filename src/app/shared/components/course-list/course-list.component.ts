@@ -89,6 +89,8 @@ export class CourseListComponent implements OnInit, OnDestroy {
           this.resetCourseLists();
           return of([]);
         }
+
+        // Use instructor field from courses, with fallback
         this.originalCourses = courses.map(course => ({
           ...course,
           instructor: course.instructor || 'Unknown Instructor'
@@ -109,8 +111,8 @@ export class CourseListComponent implements OnInit, OnDestroy {
         return combineLatest(preloadEnrollments$).pipe(
           tap(() => {
             this.sortCourses();
-            this.cdr.detectChanges();
             this.isLoading = false;
+            this.cdr.detectChanges();
           })
         );
       }),
@@ -191,7 +193,7 @@ export class CourseListComponent implements OnInit, OnDestroy {
 
   sortCourses(): void {
     const [field, direction] = this.sortCriteria.split('-');
-    this.sortedCourses = [...this.filteredCourses].sort((a, b) => {
+    this.sortedCourses = [...this.filteredCourses].sort((a: Course, b: Course) => {
       if (field === 'title') {
         return direction === 'asc'
           ? a.title.localeCompare(b.title)

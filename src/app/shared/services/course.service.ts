@@ -99,7 +99,6 @@ export class CourseService {
           switchMap(() =>
             this.http.get<Enrollment[]>(`${this.apiUrl}/courses/enrolled-courses`).pipe(
               switchMap(enrollments => {
-                // Fetch course details to get instructorId and instructor
                 return this.getCourses().pipe(
                   map(courses => {
                     const cleaned = (enrollments || []).map(e => {

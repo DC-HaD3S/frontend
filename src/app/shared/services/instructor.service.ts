@@ -32,6 +32,12 @@ export class InstructorService {
       catchError(this.handleError)
     );
   }
+  getInstructorName(instructorId: number): Observable<string> {
+    return this.http.get<{ name: string }>(`${this.apiUrl}/instructor/${instructorId}`).pipe(
+      map(instructor => instructor.name),
+      catchError(() => of('Unknown Instructor'))
+    );
+  }
 
   getCoursesByInstructorId(instructorId: number): Observable<Course[]> {
     const url = `${this.apiUrl}/${instructorId}/courses`;

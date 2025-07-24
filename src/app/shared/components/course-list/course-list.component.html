@@ -38,7 +38,7 @@
         <span class="instructor-name" 
               [ngClass]="{'disabled': !course.instructorId}"
               (click)="course.instructorId ? navigateToInstructor(course.instructorId) : null">
-          {{ course.instructor || 'Unknown Instructor' }}
+          {{ course.instructor }}
         </span>
 
         <div *ngIf="course.id != null" class="average-rating">
