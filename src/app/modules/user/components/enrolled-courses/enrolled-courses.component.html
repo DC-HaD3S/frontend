@@ -1,72 +1,67 @@
-<div class="course-grid-container">
-  <!-- Error Message -->
-  <div *ngIf="error$ | async as error" class="error">
-    {{ error }}
-  </div>
-
-  <!-- Loading Spinner or Message -->
-  <div *ngIf="isLoading" class="loading">
-    Loading courses...
-  </div>
-
-  <!-- No Courses -->
+<div class="enrolled-courses-container">
+  <div *ngIf="error$ | async as error" class="error">{{ error }}</div>
+  <div *ngIf="isLoading" class="loading">Loading enrolled courses...</div>
   <div *ngIf="!isLoading && !hasCourses && !(error$ | async)" class="no-courses">
-    No courses available at the moment.
+    You are not enrolled in any courses.
   </div>
 
-  <!-- Course Grid -->
   <div class="course-grid" *ngIf="hasCourses">
-    <mat-card *ngFor="let course of paginatedEnrollments; trackBy: trackByCourseId" class="course-card">
+    <mat-card *ngFor="let enrollment of paginatedEnrollments; trackBy: trackByCourseId" class="course-card">
       <mat-card-header>
-        <mat-card-title>{{ course.courseName }}</mat-card-title>
+        <mat-card-title>{{ enrollment.courseName }}</mat-card-title>
+        <mat-card-subtitle></mat-card-subtitle>
       </mat-card-header>
 
-      <img mat-card-image [src]="course.imageUrl" [alt]="course.courseName" *ngIf="course.imageUrl">
+      <img mat-card-image [src]="enrollment.imageUrl" [alt]="enrollment.courseName" *ngIf="enrollment.imageUrl" />
 
       <mat-card-content>
-        <p>{{ truncateBody(course.body, 100) }}</p>
-        <ng-container *ngIf="course.courseId != null">
-          <p class="average-rating">
-            Average Rating:
-            <span class="star-rating">
-              <ng-container *ngIf="getAverageRating$(course.courseId) | async as rating; else noRating">
-                <ng-container *ngFor="let i of [1, 2, 3, 4, 5]">
-                  <fa-icon
-                    [icon]="getStarIcon(rating, i)"
-                    [ngStyle]="{ color: getStarColor(rating, i) }"
-                  ></fa-icon>
-                </ng-container>
-                <span>({{ rating | number:'1.1-1' }}/5)</span>
+        <p>{{ truncateBody(enrollment.body, 100) }}</p>
+        <span class="instructor-name" 
+              [ngClass]="{'disabled': !enrollment.instructorId}"
+              (click)="enrollment.instructorId ? navigateToInstructor(enrollment.instructorId) : null">
+          {{ enrollment.instructor || 'Unknown Instructor' }}
+        </span>
+
+        <div class="average-rating">
+          <span>Average Rating:</span>
+          <span class="star-rating">
+            <ng-container *ngIf="getAverageRating$(enrollment.courseId) | async as rating; else noRating">
+              <ng-container *ngFor="let i of [1,2,3,4,5]">
+                <fa-icon [icon]="getStarIcon(rating, i)" [ngStyle]="{ color: getStarColor(rating, i) }"></fa-icon>
               </ng-container>
-              <ng-template #noRating>
-                <ng-container *ngFor="let i of [1, 2, 3, 4, 5]">
-                  <fa-icon [icon]="emptyStar" style="color: #d1d5db;"></fa-icon>
-                </ng-container>
-                <span>(0/5)</span>
-              </ng-template>
-            </span>
-          </p>
-        </ng-container>
+              <span>({{ rating | number:'1.1-1' }}/5)</span>
+            </ng-container>
+            <ng-template #noRating>
+              <ng-container *ngFor="let i of [1,2,3,4,5]">
+                <fa-icon [icon]="emptyStar" style="color: #d1d5db;"></fa-icon>
+              </ng-container>
+              <span>(0/5)</span>
+            </ng-template>
+          </span>
+        </div>
+
         <p class="price">
-          Price: {{ course.price != null ? (course.price === 0 ? 'Free' : 'Rs.' + course.price) : 'N/A' }}
+          Price: {{
+            enrollment.price != null
+            ? (enrollment.price === 0 ? 'Free' : 'Rs.' + enrollment.price)
+            : 'N/A'
+          }}
         </p>
       </mat-card-content>
 
       <mat-card-actions>
-        <button mat-stroked-button color="primary" (click)="openDetailsDialog(course)">
-          View Details
-        </button>
+        <button mat-stroked-button color="primary" (click)="openDetailsDialog(enrollment)">View Details</button>
       </mat-card-actions>
     </mat-card>
   </div>
 
-  <!-- Paginator -->
   <mat-paginator
     *ngIf="hasCourses"
     [length]="sortedEnrollments.length"
     [pageSize]="pageSize"
-    [pageSizeOptions]="[9]"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="[5, 9, 15]"
     (page)="onPageChange($event)"
-    aria-label="Select page of enrolled courses"
+    showFirstLastButtons
   ></mat-paginator>
 </div>

@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from 'src/app/shared/components/confirm-dialog/confirm-dialog.component';
+import { SignupComponent } from 'src/app/shared/components/signup/signup.component';
 
 @Component({
   selector: 'app-registered-users',
@@ -18,11 +19,10 @@ export class RegisteredUsersComponent implements OnInit {
   error: string | null = null;
   sortField: string = 'name';
   sortOrder: 'asc' | 'desc' = 'asc';
-filteredUsers: User[] = [];
-pagedUsers: User[] = [];
-pageSize: number = 10;
-currentPage: number = 0;
-
+  filteredUsers: User[] = [];
+  pagedUsers: User[] = [];
+  pageSize: number = 10;
+  currentPage: number = 0;
 
   constructor(
     private userService: UserService,
@@ -30,11 +30,10 @@ currentPage: number = 0;
     private router: Router,
     private snackBar: MatSnackBar,
     private dialog: MatDialog
-
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    if (!this.authService.isLoggedIn()) {
+    if (!this.authService.isLoggedIn() || !this.authService.isAdmin()) {
       this.error = 'Please log in as an admin to view users.';
       this.snackBar.open(this.error, 'Close', { duration: 5000 });
       this.router.navigate(['/login']);
@@ -42,51 +41,64 @@ currentPage: number = 0;
     }
     this.loadUsers();
   }
-loadUsers(): void {
-  this.userService.getAllUsers().subscribe({
-    next: (users) => {
-      this.users = users;
-      this.filteredUsers = [...users];
-      this.sortUsers();
-      this.applyPagination();
-      this.error = null;
+
+  loadUsers(): void {
+    this.userService.getAllUsers().subscribe({
+      next: (users) => {
+        this.users = users;
+        this.filteredUsers = [...users];
+        this.sortUsers();
+        this.applyPagination();
+        this.error = null;
+      },
+      error: (err) => {
+        this.error = err.message;
+        if (err.message.includes('Unauthorized')) {
+          this.authService.logout();
+          this.router.navigate(['/login']);
+        }
+      }
+    });
+  }
+
+  applyPagination(): void {
+    const start = this.currentPage * this.pageSize;
+    const end = start + this.pageSize;
+    this.pagedUsers = this.filteredUsers.slice(start, end);
+  }
+
+  openAddUserDialog(): void {
+    const dialogRef = this.dialog.open(SignupComponent, {
+      width: '400px',
+      disableClose: true // Prevent closing by clicking outside
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadUsers(); // Refresh user list on successful addition
+      }
+    });
+  }
+
+deleteUser(user: User): void {
+  if (!user.email) {
+    this.snackBar.open('User email is missing. Cannot delete.', 'Close', { duration: 4000 });
+    return;
+  }
+  this.userService.deleteUserByEmail(user.email).subscribe({
+    next: (res) => {
+      this.snackBar.open(res.message, 'Close', { duration: 4000 });
+
+      this.loadUsers(); 
     },
     error: (err) => {
-      this.error = err.message;
-      if (err.message.includes('Unauthorized')) {
-        this.authService.logout();
-        this.router.navigate(['/login']);
-      }
+      const msg = err.message || 'Failed to delete user.';
+      this.snackBar.open(msg, 'Close', { duration: 4000 });
     }
   });
 }
 
-applyPagination(): void {
-  const start = this.currentPage * this.pageSize;
-  const end = start + this.pageSize;
-  this.pagedUsers = this.filteredUsers.slice(start, end);
-}
 
-
-  deleteUser(user: User): void {
-    if (!user.email) {
-      this.snackBar.open('User email is missing. Cannot delete.', 'Close', { duration: 4000 });
-      return;
-    }
-
-
-    this.userService.deleteUserByEmail(user.email).subscribe({
-      next: (res) => {
-        this.snackBar.open(res.message, 'Close', { duration: 4000 });
-        this.users = this.users.filter(u => u.email !== user.email);
-        this.sortUsers();
-      },
-      error: (err) => {
-        const msg = err.message || 'Failed to delete user.';
-        this.snackBar.open(msg, 'Close', { duration: 4000 });
-      }
-    });
-  }
   openDeleteDialog(user: User): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
@@ -103,54 +115,55 @@ applyPagination(): void {
     });
   }
 
-sortUsers(): void {
-  this.filteredUsers.sort((a, b) => {
-    let valueA: string | undefined;
-    let valueB: string | undefined;
+  sortUsers(): void {
+    this.filteredUsers.sort((a, b) => {
+      let valueA: string | undefined;
+      let valueB: string | undefined;
 
-    switch (this.sortField) {
-      case 'name':
-        valueA = a.name || a.username || '';
-        valueB = b.name || b.username || '';
-        break;
-      case 'username':
-        valueA = a.username || '';
-        valueB = b.username || '';
-        break;
-      case 'email':
-        valueA = a.email || '';
-        valueB = b.email || '';
-        break;
-      default:
-        return 0;
-    }
+      switch (this.sortField) {
+        case 'name':
+          valueA = a.name || a.username || '';
+          valueB = b.name || b.username || '';
+          break;
+        case 'username':
+          valueA = a.username || '';
+          valueB = b.username || '';
+          break;
+        case 'email':
+          valueA = a.email || '';
+          valueB = b.email || '';
+          break;
+        default:
+          return 0;
+      }
 
-    const isAsc = this.sortOrder === 'asc';
-    return valueA.localeCompare(valueB) * (isAsc ? 1 : -1);
-  });
+      const isAsc = this.sortOrder === 'asc';
+      return valueA.localeCompare(valueB) * (isAsc ? 1 : -1);
+    });
 
-  this.applyPagination();
-}
+    this.applyPagination();
+  }
+
   toggleSortOrder(): void {
     this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
     this.sortUsers();
   }
+
   get totalPages(): number {
-  return Math.ceil(this.filteredUsers.length / this.pageSize);
-}
-
-nextPage(): void {
-  if (this.currentPage < this.totalPages - 1) {
-    this.currentPage++;
-    this.applyPagination();
+    return Math.ceil(this.filteredUsers.length / this.pageSize);
   }
-}
 
-prevPage(): void {
-  if (this.currentPage > 0) {
-    this.currentPage--;
-    this.applyPagination();
+  nextPage(): void {
+    if (this.currentPage < this.totalPages - 1) {
+      this.currentPage++;
+      this.applyPagination();
+    }
   }
-}
 
+  prevPage(): void {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+      this.applyPagination();
+    }
+  }
 }

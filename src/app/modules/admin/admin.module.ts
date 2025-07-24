@@ -7,6 +7,7 @@ import { FeedbackListComponent } from './components/feedback-list/feedback-list.
 import { RegisteredUsersComponent } from './components/registered-users/registered-users.component';
 import { EnrolledUsersComponent } from './components/enrolled-users/enrolled-users.component';
 import { ManageCoursesComponent } from './components/manage-courses/manage-courses.component';
+import { UserDetailsDialogComponent } from './components/user-details-dialog.component/user-details-dialog.component';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { ManageCoursesComponent } from './components/manage-courses/manage-cours
     RegisteredUsersComponent,
     EnrolledUsersComponent,
     ManageCoursesComponent,
+    UserDetailsDialogComponent,
   ],
   imports: [
     SharedModule,

@@ -1,0 +1,241 @@
+
+    .dialog-container {
+      max-width: 600px;
+      width: 100%;
+    }
+
+    .dialog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .dialog-header h2 {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0;
+      color: #2d3748;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .user-icon {
+      color: #667eea;
+      font-size: 28px;
+    }
+
+    .close-button {
+      color: #666;
+    }
+
+    .dialog-content {
+      padding: 24px;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    .user-info-section {
+      margin-bottom: 24px;
+    }
+
+    .info-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      color: white;
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .info-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+    }
+
+    .info-details h3 {
+      margin: 0 0 8px 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .email {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 1rem;
+    }
+
+    .enrollment-stats {
+      margin-bottom: 32px;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      border-radius: 12px;
+      color: white;
+      box-shadow: 0 4px 20px rgba(79, 172, 254, 0.3);
+    }
+
+    .stat-icon {
+      font-size: 40px;
+      width: 40px;
+      height: 40px;
+    }
+
+    .stat-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
+
+    .courses-section {
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      color: #2d3748;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .courses-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .course-item {
+      animation: slideInUp 0.3s ease-out forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    @keyframes slideInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .course-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+      transition: all 0.3s ease;
+    }
+
+    .course-card:hover {
+      background: #e9ecef;
+      transform: translateX(4px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .course-icon {
+      color: #667eea;
+      font-size: 24px;
+    }
+
+    .course-info h4 {
+      margin: 0 0 4px 0;
+      color: #2d3748;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    .course-id {
+      margin: 0;
+      color: #666;
+      font-size: 0.875rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      color: #ccc;
+      margin-bottom: 16px;
+    }
+
+    .empty-state h3 {
+      margin: 0 0 8px 0;
+      color: #2d3748;
+    }
+
+    .empty-state p {
+      margin: 0;
+      color: #666;
+    }
+
+    .dialog-actions {
+      padding: 16px 24px;
+      border-top: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .cancel-button {
+      color: #666;
+    }
+
+    .export-button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+    }
+
+    .export-button:hover {
+      background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    }
+
+    @media (max-width: 600px) {
+      .dialog-container {
+        max-width: 95vw;
+      }
+
+      .info-card, .stat-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+      }
+
+      .course-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+      }
+    }

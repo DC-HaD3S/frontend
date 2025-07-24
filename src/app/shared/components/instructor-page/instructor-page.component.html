@@ -1,0 +1,168 @@
+<div *ngIf="isLoading" class="loading-container">
+  <mat-spinner diameter="50"></mat-spinner>
+  <p class="loading-text">Loading instructor profile...</p>
+</div>
+
+<div *ngIf="error" class="error-container">
+  <mat-icon class="error-icon">error_outline</mat-icon>
+  <p class="error-text">{{ error }}</p>
+  <button mat-raised-button color="primary" routerLink="/courses">
+    Browse Courses
+  </button>
+</div>
+
+<div *ngIf="instructorDetails && !isLoading" class="instructor-page">
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="instructor-profile">
+        <div class="profile-image-container">
+          <img [src]="instructorDetails.photoUrl || 'assets/default-instructor.jpg'" 
+               (error)="handleImageError($event)" 
+               alt="Instructor Photo" 
+               class="profile-image" 
+               loading="eager" />
+        </div>
+        <div class="profile-info">
+          <h1 class="instructor-name">{{ instructorDetails.name }}</h1>
+          <p class="instructor-title">Professional Instructor</p>
+
+          <div class="stats-row">
+            <div class="stat-item" *ngIf="averageRating !== null">
+              <mat-icon>star_rate</mat-icon>
+              <span class="stat-label">Rating</span>
+              <span class="stat-value">{{ averageRating | number:'1.1-1' }}/5</span>
+            </div>
+            <div class="stat-item" *ngIf="enrollmentCount !== null">
+              <mat-icon>people</mat-icon>
+              <span class="stat-label">Students</span>
+              <span class="stat-value">{{ enrollmentCount | number }}</span>
+            </div>
+            <div class="stat-item">
+              <mat-icon>work</mat-icon>
+              <span class="stat-label">Experience</span>
+              <span class="stat-value">{{ instructorDetails.experience }}+ years</span>
+            </div>
+            <div class="stat-item">
+              <mat-icon>comment</mat-icon>
+              <span class="stat-label">Reviews</span>
+              <span class="stat-value">{{ totalReviews | number }}</span>
+            </div>
+          </div>
+
+          <div class="social-links" *ngIf="instructorDetails.twitterUrl || instructorDetails.githubUrl || instructorDetails.email">
+            <a *ngIf="instructorDetails.twitterUrl" [href]="instructorDetails.twitterUrl" target="_blank"
+              mat-icon-button class="social-link twitter">
+              <fa-icon [icon]="faTwitter"></fa-icon>
+            </a>
+            <a *ngIf="instructorDetails.githubUrl" [href]="instructorDetails.githubUrl" target="_blank" mat-icon-button
+              class="social-link github">
+              <fa-icon [icon]="faGithub"></fa-icon>
+            </a>
+            <a *ngIf="instructorDetails.email" [href]="'mailto:' + instructorDetails.email" target="_blank"
+              mat-icon-button class="social-link email">
+              <fa-icon [icon]="faEnvelope"></fa-icon>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <div class="container">
+      <mat-card class="about-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>person</mat-icon>
+            About {{ instructorDetails.name }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="about-grid">
+            <div class="about-text">
+              <p class="about-description">{{ instructorDetails.aboutMe || 'No description available.' }}</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="courses-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <mat-icon>library_books</mat-icon>
+            Courses by {{ instructorDetails.name }}
+          </h2>
+          <div class="course-count" *ngIf="courses.length > 0">
+            {{ courses.length }} course{{ courses.length !== 1 ? 's' : '' }} available
+          </div>
+        </div>
+
+        <div *ngIf="courses.length === 0" class="no-courses">
+          <mat-icon class="no-courses-icon">library_books</mat-icon>
+          <h3>No courses available</h3>
+          <p>This instructor hasn't published any courses yet.</p>
+        </div>
+
+        <div class="courses-grid" *ngIf="courses.length > 0">
+          <mat-card *ngFor="let course of pagedCourses; let i = index; trackBy: trackByCourseId" class="course-card"
+            [class.featured]="i === 0">
+            <div class="course-image-container">
+              <img [src]="course.imageUrl || 'assets/default-instructor.jpg'" 
+                   (error)="handleImageError($event)" 
+                   [alt]="course.title" 
+                   class="course-image" 
+                   loading="lazy" />
+              <div class="course-overlay">
+                <button mat-fab color="primary" class="preview-btn" (click)="navigateToCourseDetails(course.id)"
+                  matTooltip="View Course Details">
+                  <mat-icon>play_arrow</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <mat-card-content class="course-content">
+              <h3 class="course-title" [matTooltip]="course.title">{{ course.title }}</h3>
+              <p class="course-description">
+                {{ course.body | slice:0:120 }}{{ course.body && course.body.length > 120 ? '...' : '' }}
+              </p>
+              <div class="course-rating" *ngIf="course.id">
+                <div class="stars">
+                  <ng-container *ngIf="getAverageRating$(course.id) | async as rating; else noRating">
+                    <ng-container *ngFor="let i of [1,2,3,4,5]">
+                      <fa-icon [icon]="getStarIcon(rating, i)" [ngStyle]="{ color: getStarColor(rating, i) }"
+                        class="star-icon"></fa-icon>
+                    </ng-container>
+                    <span class="rating-value">({{ rating | number:'1.1-1' }})</span>
+                  </ng-container>
+                  <ng-template #noRating>
+                    <ng-container *ngFor="let i of [1,2,3,4,5]">
+                      <fa-icon [icon]="emptyStar" class="star-icon empty"></fa-icon>
+                    </ng-container>
+                    <span class="rating-value">(0)</span>
+                  </ng-template>
+                </div>
+              </div>
+              <div class="course-footer">
+                <div class="price-container">
+                  <span class="price" [class.free]="course.price === 0">
+                    {{ course.price != null ? (course.price === 0 ? 'Free' : '₹' + course.price) : 'N/A' }}
+                  </span>
+                </div>
+                <button mat-raised-button color="primary" class="enroll-btn"
+                  (click)="navigateToCourseDetails(course.id)">
+                  View Details
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <div class="pagination-section" *ngIf="totalPages > 1">
+          <mat-paginator [length]="courses.length" [pageSize]="pageSize" [pageIndex]="currentPage"
+            [pageSizeOptions]="[6, 9, 12, 18]" (page)="onPageChange($event)" showFirstLastButtons>
+          </mat-paginator>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

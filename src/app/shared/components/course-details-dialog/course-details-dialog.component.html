@@ -1,5 +1,9 @@
 <div class="page-container" *ngIf="course">
+  <div class="d-flex justify-content-end mb-3"> 
+    <button mat-raised-button class="back-button" (click)="goBack()">Back to Courses</button>
+  </div>
   <h1>{{ course.title || 'No Title' }}</h1>
+
   <div class="content-container">
     <div class="image-container" *ngIf="course.imageUrl; else noImage">
       <img [src]="course.imageUrl" [alt]="course.title || 'Course Image'" class="course-image" loading="lazy" />
@@ -9,6 +13,11 @@
     </ng-template>
     <div class="text-container">
       <p class="description">{{ course.body || 'No description available.' }}</p>
+      <p class="instructor">
+        <span class="instructor-name" [ngClass]="{'disabled': !course.instructorId}" (click)="navigateToInstructor(course.instructorId)">
+          {{ course.instructor || 'Unknown Instructor' }}
+        </span>
+      </p>
       <p class="price">Price: {{ course.price != null ? (course.price === 0 ? 'Free' : 'Rs.' + course.price) : 'N/A' }}</p>
       <p class="average-rating" *ngIf="averageRating != null">
         Average Rating:
@@ -36,8 +45,6 @@
     </div>
   </div>
   <div class="actions-container">
-    <button mat-raised-button class="back-button" (click)="goBack()">Back to Courses</button>
-    
     <ng-container *ngIf="(isEnrolled$ | async); else notEnrolled">
       <button mat-raised-button color="accent" (click)="openFeedbackDialog()">
         Submit Feedback
@@ -72,13 +79,12 @@
             <mat-option value="comments">Comments</mat-option>
           </mat-select>
         </mat-form-field>
-        
       </div>
       <button mat-icon-button (click)="toggleSortOrder()"
-          matTooltip="{{ sortOrder === 'asc' ? 'Sort Descending' : 'Sort Ascending' }}"
-          aria-label="Toggle sort order">
-          <mat-icon>{{ sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
-        </button>
+              matTooltip="{{ sortOrder === 'asc' ? 'Sort Descending' : 'Sort Ascending' }}"
+              aria-label="Toggle sort order">
+        <mat-icon>{{ sortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+      </button>
     </div>
     <table mat-table [dataSource]="dataSource" matSort class="mat-table" aria-label="Feedback table">
       <ng-container matColumnDef="username">

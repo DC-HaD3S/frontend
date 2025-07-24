@@ -10,7 +10,6 @@ import { environment } from 'src/environment/environment.prod';
 export class FeedbackService {
   private baseUrl = `${environment.apiUrl}/feedback`;
 
-
   constructor(private http: HttpClient) {}
 
   getAllFeedbacks(): Observable<Feedback[]> {
@@ -31,5 +30,9 @@ export class FeedbackService {
 
   getFeedbacksByCourseId(courseId: number): Observable<Feedback[]> {
     return this.http.get<Feedback[]>(`${this.baseUrl}/course/${courseId}`);
+  }
+
+  getInstructorFeedbackCount(instructorId: number): Observable<number> {
+    return this.http.get<number>(`${this.baseUrl}/instructor/${instructorId}/feedback-count`);
   }
 }

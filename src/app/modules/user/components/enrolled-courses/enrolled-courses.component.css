@@ -159,6 +159,16 @@ button[mat-dialog-close]:hover{
   color: #2c3e50;
 
 }
+.instructor-name {
+  color: #3b82f6;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.instructor-name:hover {
+  text-decoration: underline;
+}
 .dialog-actions {
   display: flex;
   justify-content: center; 

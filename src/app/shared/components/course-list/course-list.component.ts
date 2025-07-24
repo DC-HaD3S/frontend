@@ -5,22 +5,18 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Observable, of, combineLatest, Subject, BehaviorSubject } from 'rxjs';
 import { take, catchError, map, switchMap, tap, shareReplay, takeUntil } from 'rxjs/operators';
-
 import { Course } from 'src/app/shared/models/course.model';
 import { Feedback } from 'src/app/shared/models/feedback.model';
 import { UserRole } from 'src/app/enums/user-role.enum';
 import { AppState } from 'src/app/store/app.state';
-
 import { CourseApplyDialogComponent } from 'src/app/modules/user/components/course-apply-dialog/course-apply-dialog.component';
 import { loadCourses } from 'src/app/store/course/course.actions';
 import { selectCourses, selectCourseError, selectEnrollments, selectCourseById } from 'src/app/store/course/course.selectors';
-
-import { CourseService } from 'src/app/shared/services/course.service';
+import { CourseService, HighestEnrollmentDTO } from 'src/app/shared/services/course.service';
 import { FeedbackService } from 'src/app/shared/services/feedback.service';
 import { AuthService } from 'src/app/auth/auth.services';
 import { faStar as solidStar, faStarHalfAlt } from '@fortawesome/free-solid-svg-icons';
 import { faStar as emptyStar } from '@fortawesome/free-regular-svg-icons';
-
 
 @Component({
   selector: 'app-course-list',
@@ -34,6 +30,7 @@ export class CourseListComponent implements OnInit, OnDestroy {
   role$: Observable<UserRole | null>;
   username$: Observable<string | null>;
   isAuthenticated$: Observable<boolean>;
+  highestEnrolledCourseId: number | null = null;
 
   sortedCourses: Course[] = [];
   sortCriteria = 'title-asc';
@@ -82,19 +79,29 @@ export class CourseListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.store.dispatch(loadCourses());
 
-    this.courses$.pipe(
+    combineLatest([
+      this.courses$,
+      this.courseService.getHighestEnrolledCourses()
+    ]).pipe(
       takeUntil(this.destroy$),
-      switchMap(courses => {
+      switchMap(([courses, highestEnrollments]) => {
         if (!Array.isArray(courses)) {
           this.resetCourseLists();
           return of([]);
         }
+        this.originalCourses = courses.map(course => ({
+          ...course,
+          instructor: course.instructor || 'Unknown Instructor'
+        }));
+        this.filteredCourses = [...this.originalCourses];
+        this.hasCourses = this.filteredCourses.length > 0;
 
-        this.originalCourses = [...courses];
-        this.filteredCourses = [...courses];
-        this.hasCourses = courses.length > 0;
+        if (highestEnrollments.length > 0) {
+          const highest = highestEnrollments.reduce((prev, curr) => (prev.count > curr.count ? prev : curr));
+          this.highestEnrolledCourseId = highest.courseId;
+        }
 
-        const preloadEnrollments$ = courses.map(course => {
+        const preloadEnrollments$ = this.originalCourses.map(course => {
           this.loadingEnrollments.set(course.id!, true);
           return this.getIsEnrolled$(course.id!).pipe(take(1));
         });
@@ -109,7 +116,7 @@ export class CourseListComponent implements OnInit, OnDestroy {
       }),
       catchError(err => {
         console.error('Failed during course/enrollment preload:', err);
-        this.snackBar.open('Failed to load courses', 'Close', { duration: 5000 });
+        this.snackBar.open('Failed to load courses or enrollments', 'Close', { duration: 5000 });
         this.isLoading = false;
         this.cdr.detectChanges();
         return of([]);
@@ -132,10 +139,25 @@ export class CourseListComponent implements OnInit, OnDestroy {
           this.canApplyCache.clear();
           this.averageRatingCache.clear();
           this.loadingEnrollments.clear();
+          this.highestEnrolledCourseId = null;
           this.cdr.detectChanges();
         }
       })
     ).subscribe();
+  }
+
+  isBestSelling(courseId: number | undefined): boolean {
+    return courseId !== undefined && courseId === this.highestEnrolledCourseId;
+  }
+
+  navigateToInstructor(instructorId: number | null): void {
+    if (instructorId && !isNaN(instructorId) && instructorId > 0) {
+      console.log('Navigating to instructor ID:', instructorId);
+      this.router.navigate(['/instructor', instructorId]);
+    } else {
+      console.error('Cannot navigate: Invalid instructor ID', instructorId);
+      this.snackBar.open('Instructor information is not available', 'Close', { duration: 5000 });
+    }
   }
 
   getStarIcon(rating: number, index: number) {
@@ -150,6 +172,7 @@ export class CourseListComponent implements OnInit, OnDestroy {
     }
     return '#d1d5db';
   }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -325,6 +348,7 @@ export class CourseListComponent implements OnInit, OnDestroy {
   trackByCourseId(index: number, course: Course): number {
     return course.id ?? index;
   }
+
   getStarType(rating: number, index: number): 'full' | 'half' | 'empty' {
     if (rating >= index) {
       return 'full';
@@ -343,7 +367,6 @@ export class CourseListComponent implements OnInit, OnDestroy {
     return this.sortedCourses.slice(start, start + this.pageSize);
   }
 
-
   get totalPages(): number {
     return Math.ceil(this.sortedCourses.length / this.pageSize);
   }
@@ -352,7 +375,6 @@ export class CourseListComponent implements OnInit, OnDestroy {
     if (this.currentPage < this.totalPages - 1) {
       this.currentPage++;
       this.cdr.detectChanges();
-
     }
   }
 

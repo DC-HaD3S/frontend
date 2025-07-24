@@ -91,15 +91,11 @@
   }
 }
 
-
 .sort-field mat-form-field,
 .search-field mat-form-field {
   width: 100%;
   display: block;
 }
-
-
-
 
 @media (max-width: 480px) {
   .pagination-controls {
@@ -157,6 +153,34 @@ mat-card-header {
 mat-card-title {
   font-size: 1.2rem;
   color: #1e3a8a;
+  font-weight: 600;
+}
+
+mat-card-subtitle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.instructor-name {
+  color: #3b82f6;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.instructor-name:hover {
+  text-decoration: underline;
+}
+
+.best-selling-tag {
+  background-color: #fef08a;
+  color: #854d0e;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
   font-weight: 600;
 }
 
@@ -229,5 +253,3 @@ button[mat-stroked-button] {
 .pagination-controls button {
   min-width: 100px;
 }
-
-

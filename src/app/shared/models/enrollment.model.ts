@@ -5,4 +5,6 @@ export interface Enrollment {
   body?: string; 
   imageUrl?: string;
   price?: number;
+instructorId?: number | null;
+  instructor?: string;
 }

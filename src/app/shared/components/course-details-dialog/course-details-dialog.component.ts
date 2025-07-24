@@ -177,6 +177,17 @@ export class CourseDetailsComponent implements OnInit, AfterViewInit, OnDestroy 
     this.destroy$.complete();
   }
 
+navigateToInstructor(instructorId: number | null | undefined): void
+ {
+    if (instructorId && !isNaN(instructorId) && instructorId > 0) {
+      console.log('Navigating to instructor ID:', instructorId);
+      this.router.navigate(['/instructor', instructorId]);
+    } else {
+      console.error('Cannot navigate: Invalid instructor ID', instructorId);
+      this.snackBar.open('Instructor information is not available', 'Close', { duration: 5000 });
+    }
+  }
+
   loadFeedbacks(courseId: number): void {
     this.feedbackService.getFeedbacksByCourseId(courseId).pipe(
       takeUntil(this.destroy$)
@@ -334,6 +345,7 @@ export class CourseDetailsComponent implements OnInit, AfterViewInit, OnDestroy 
       }
     });
   }
+
   goBack(): void {
     this.router.navigate(['/courses']);
   }

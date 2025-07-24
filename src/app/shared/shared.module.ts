@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MatCardModule } from '@angular/material/card';
@@ -17,19 +18,25 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { MatOptionModule } from '@angular/material/core'; 
 import { MatProgressBarModule } from '@angular/material/progress-bar'; 
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { DetailsCardComponent } from './components/details-card/details-card.component';
 import { CourseApplyDialogComponent } from '../modules/user/components/course-apply-dialog/course-apply-dialog.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { InstructorPageComponent } from './components/instructor-page/instructor-page.component';
+import { AsyncFeedbackCountPipe } from './components/pipes/async-feedback-count';
 
 @NgModule({
   declarations: [
     DetailsCardComponent,
     CourseApplyDialogComponent,
-    
+    InstructorPageComponent,
+    AsyncFeedbackCountPipe,    
     ConfirmDialogComponent,
   ],
   imports: [
     CommonModule,
+    RouterModule,
     FormsModule,
     ReactiveFormsModule,
     FontAwesomeModule,
@@ -47,14 +54,17 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     MatTableModule,
     MatSortModule,
     MatOptionModule,
- 
     MatProgressBarModule, 
+    MatProgressSpinnerModule,
+    MatTooltipModule,
   ],
   exports: [
     CommonModule,
+    RouterModule,
     FormsModule,
     ReactiveFormsModule,
     FontAwesomeModule,
+    
     MatCardModule,
     MatButtonModule,
     MatDialogModule,
@@ -71,6 +81,8 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     MatOptionModule,
 
     MatProgressBarModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
     DetailsCardComponent,
     CourseApplyDialogComponent,
     ConfirmDialogComponent,

@@ -175,20 +175,22 @@ export class AuthService {
     );
   }
 
-  signup(name: string, email: string, username: string, password: string, role: string = 'USER'): Observable<string> {
-    const body = { name, email, username, password, role };
-    return this.http.post<string>(`${this.apiUrl}/auth/signup`, body, { responseType: 'text' as 'json' }).pipe(
-      tap(() => {
+signup(name: string, email: string, username: string, password: string, role: string = 'USER'): Observable<string> {
+  const body = { name, email, username, password, role };
+  return this.http.post<string>(`${this.apiUrl}/auth/signup`, body, { responseType: 'text' as 'json' }).pipe(
+    tap(() => {
+      if (!this.isAdmin()) {
         this.store.dispatch(clearRole());
         this.store.dispatch(setUserDetails({ userDetails: null }));
         this.authStateSubject.next(false);
-      }),
-      catchError(err => {
-        console.error('Signup error:', err);
-        return throwError(() => new Error(err.error || 'Signup failed. Please try again.'));
-      })
-    );
-  }
+      }
+    }),
+    catchError(err => {
+      console.error('Signup error:', err);
+      return throwError(() => new Error(err.error || 'Signup failed. Please try again.'));
+    })
+  );
+}
 
   checkUsername(username: string): Observable<boolean> {
     return this.http.get<string>(`${this.apiUrl}/auth/check-username?username=${encodeURIComponent(username)}`).pipe(

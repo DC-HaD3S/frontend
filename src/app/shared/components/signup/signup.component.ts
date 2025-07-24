@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component,Optional } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/auth/auth.services';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialogRef } from '@angular/material/dialog';
+import { take, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-signup',
@@ -13,7 +15,7 @@ export class SignupComponent {
   email: string = '';
   username: string = '';
   password: string = '';
-  role: string = 'USER'; 
+  role: string = 'USER';
   error: string = '';
   loading: boolean = false;
   usernameAvailable: boolean | null = null;
@@ -21,9 +23,10 @@ export class SignupComponent {
 
   constructor(
     private authService: AuthService,
-        private snackBar: MatSnackBar,
-    private router: Router
-  ) {}
+    private snackBar: MatSnackBar,
+    private router: Router,
+  @Optional() public dialogRef?: MatDialogRef<SignupComponent>
+  ) { }
 
   checkUsername(): void {
     if (this.username) {
@@ -55,6 +58,23 @@ export class SignupComponent {
     }
   }
 
+  goToRegisteredUsers(): void {
+    this.checkAuthAndNavigate('/admin/registered-users');
+  }
+
+  private checkAuthAndNavigate(path: string): void {
+    this.authService.isAuthenticated$().pipe(
+      take(1),
+      tap((isAuthenticated: boolean) => {
+        if (!isAuthenticated) {
+          this.router.navigate(['/login'], { queryParams: { returnUrl: path } });
+        } else {
+          this.router.navigate([path]);
+        }
+      })
+    ).subscribe();
+  }
+  
   onSubmit(): void {
     this.loading = true;
     this.error = '';
@@ -62,16 +82,40 @@ export class SignupComponent {
     if (this.usernameAvailable === false) {
       this.error = 'Username already registered';
       this.loading = false;
+      if (this.dialogRef) {
+        this.dialogRef.close(false);
+      }
+      if (this.authService.isAdmin()) {
+        this.goToRegisteredUsers();
+      } else {
+        this.router.navigate(['/login']);
+      }
       return;
     }
     if (this.emailAvailable === false) {
       this.error = 'Email already registered';
       this.loading = false;
+      if (this.dialogRef) {
+        this.dialogRef.close(false);
+      }
+      if (this.authService.isAdmin()) {
+        this.goToRegisteredUsers();
+      } else {
+        this.router.navigate(['/login']);
+      }
       return;
     }
     if (this.role !== 'USER') {
       this.error = 'Only USER role is allowed for signup';
       this.loading = false;
+      if (this.dialogRef) {
+        this.dialogRef.close(false);
+      }
+      if (this.authService.isAdmin()) {
+        this.goToRegisteredUsers();
+      } else {
+        this.router.navigate(['/login']);
+      }
       return;
     }
 
@@ -79,21 +123,43 @@ export class SignupComponent {
       next: () => {
         this.loading = false;
         this.snackBar.open('User successfully registered!', 'Close', {
-        duration: 3000, 
-        horizontalPosition: 'center',
-        verticalPosition: 'bottom'
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom'
         });
-        this.router.navigate(['/login']);
+        if (this.dialogRef) {
+          this.dialogRef.close(true); // Signal success for dialog
+        }
+        if (this.authService.isAdmin()) {
+          this.goToRegisteredUsers();
+        } else {
+          this.router.navigate(['/login']);
+        }
       },
       error: (err) => {
         this.loading = false;
         this.error = err.message || 'Signup failed. Please try again.';
         console.error('Signup error:', err);
+        if (this.dialogRef) {
+          this.dialogRef.close(false);
+        }
+        if (this.authService.isAdmin()) {
+          this.goToRegisteredUsers();
+        } else {
+          this.router.navigate(['/login']);
+        }
       }
     });
   }
 
   onCancel(): void {
-    this.router.navigate(['/login']);
+    if (this.dialogRef) {
+      this.dialogRef.close(false);
+    }
+    if (this.authService.isAdmin()) {
+      this.goToRegisteredUsers();
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 }

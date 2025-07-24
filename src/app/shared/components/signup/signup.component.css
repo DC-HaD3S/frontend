@@ -1,10 +1,9 @@
 /* Main container */
 .signup-container {
-  padding: 16px;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 83vh;
   background-color: #f5f5f5;
 }
 

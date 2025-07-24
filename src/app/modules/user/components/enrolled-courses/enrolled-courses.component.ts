@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/store/app.state';
 import { Observable, of, Subject } from 'rxjs';
-import { catchError, map, shareReplay, takeUntil, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap, takeUntil, shareReplay } from 'rxjs/operators';
 import { Enrollment } from 'src/app/shared/models/enrollment.model';
 import { Course } from 'src/app/shared/models/course.model';
 import { Feedback } from 'src/app/shared/models/feedback.model';
@@ -70,12 +70,19 @@ export class EnrolledCoursesComponent implements OnInit, OnDestroy {
           switchMap(allCourses => {
             return this.courseService.getEnrolledCourses().pipe(
               map(enrollments => {
-                this.sortedEnrollments = enrollments.map(enroll => ({
-                  ...enroll,
-                  body: allCourses.find(c => c.id === enroll.courseId)?.body || '',
-                  imageUrl: allCourses.find(c => c.id === enroll.courseId)?.imageUrl || '',
-                  price: allCourses.find(c => c.id === enroll.courseId)?.price ?? 0
-                }));
+                this.sortedEnrollments = enrollments.map(enroll => {
+                  const course = allCourses.find(c => c.id === enroll.courseId);
+                  const mappedEnrollment = {
+                    ...enroll,
+                    body: course?.body || '',
+                    imageUrl: course?.imageUrl || '',
+                    price: course?.price ?? 0,
+                    instructorId: course?.instructorId ?? null,
+                    instructor: course?.instructor || 'Unknown Instructor'
+                  };
+                  console.log('Mapped enrollment:', mappedEnrollment); // Debug log
+                  return mappedEnrollment;
+                });
                 this.updatePaginatedEnrollments();
                 this.isLoading = false;
                 return enrollments;
@@ -154,6 +161,8 @@ export class EnrolledCoursesComponent implements OnInit, OnDestroy {
     const course: Course = {
       id: enrollment.courseId,
       title: enrollment.courseName,
+      instructor: enrollment.instructor || 'Unknown Instructor',
+      instructorId: enrollment.instructorId ?? null,
       body: enrollment.body || '',
       price: enrollment.price ?? 0,
       imageUrl: enrollment.imageUrl || ''
@@ -167,6 +176,17 @@ export class EnrolledCoursesComponent implements OnInit, OnDestroy {
       console.error('Navigation error:', err);
       this.snackBar.open('Failed to navigate to course details', 'Close', { duration: 5000 });
     });
+  }
+
+  navigateToInstructor(instructorId: number | null): void {
+    console.log('Attempting to navigate to instructor ID:', instructorId); // Debug log
+    if (instructorId && !isNaN(instructorId) && instructorId > 0) {
+      console.log('Navigating to instructor ID:', instructorId);
+      this.router.navigate(['/instructor', instructorId]);
+    } else {
+      console.error('Cannot navigate: Invalid instructor ID', instructorId);
+      this.snackBar.open('Instructor information is not available', 'Close', { duration: 5000 });
+    }
   }
 
   onPageChange(event: PageEvent): void {

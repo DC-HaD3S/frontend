@@ -6,6 +6,7 @@ import { SignupComponent } from './shared/components/signup/signup.component';
 import { CourseListComponent } from './shared/components/course-list/course-list.component';
 import { CourseDetailsComponent } from './shared/components/course-details-dialog/course-details-dialog.component';
 import { AboutUsComponent } from './shared/components/about-us/about-us.component';
+import { InstructorPageComponent } from './shared/components/instructor-page/instructor-page.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'courses', component: CourseListComponent },
   { path: 'course-details/:id', component: CourseDetailsComponent },
   { path: 'about-us', component: AboutUsComponent },
+  { path: 'instructor/:instructorId', component: InstructorPageComponent },
   {
     path: 'admin',
     loadChildren: () => import('./modules/admin/admin.module').then(m => m.AdminModule),

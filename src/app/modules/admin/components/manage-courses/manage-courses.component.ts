@@ -17,7 +17,7 @@ import { MatPaginator } from '@angular/material/paginator';
 export class ManageCoursesComponent implements OnInit {
     dataSource = new MatTableDataSource<Course>();
     displayedColumns: string[] = ['title', 'body', 'imageUrl', 'price', 'actions'];
-    newCourse: Course = { title: '', body: '', imageUrl: '', price: 0 };
+  newCourse: Course = { title: '', body: '', imageUrl: '', price: 0, instructor: '', instructorId:0 };
     editedCourse: Course | null = null;
     error: string | null = null;
 
@@ -85,7 +85,7 @@ private compare(a: number | string, b: number | string, isAsc: boolean): number 
     }
 
     openAddCourse(): void {
-        this.newCourse = { title: '', body: '', imageUrl: '', price: 0 };
+        this.newCourse = { title: '', body: '', imageUrl: '', price: 0, instructor:'',instructorId:0 };
         this.dialog.open(this.addCourseDialog);
     }
 

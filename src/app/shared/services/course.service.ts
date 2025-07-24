@@ -12,6 +12,11 @@ import { AppState } from '../../store/app.state';
 import { loadEnrollments } from '../../store/course/course.actions';
 import { environment } from 'src/environment/environment.prod';
 
+export interface HighestEnrollmentDTO {
+  courseId: number;
+  count: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,6 +25,10 @@ export class CourseService {
   private enrollmentCache: Enrollment[] | null = null;
   private enrollmentRefresh$ = new BehaviorSubject<void>(undefined);
   private enrollingCourses = new Set<number>();
+  private highestEnrollmentsCache: HighestEnrollmentDTO[] | null = null;
+  private highestEnrollmentsRefresh$ = new BehaviorSubject<void>(undefined);
+  private coursesCache: Course[] | null = null;
+  private coursesRefresh$ = new BehaviorSubject<void>(undefined);
 
   constructor(
     private http: HttpClient,
@@ -29,12 +38,99 @@ export class CourseService {
   ) {}
 
   getCourses(): Observable<Course[]> {
-    return this.http.get<Course[]>(`${this.apiUrl}/courses`).pipe(
-      map(courses => courses || []),
-      catchError(error => {
-        console.error('Courses API Error:', error);
-        this.snackBar.open(`Error fetching courses: ${error.error?.message || 'Unknown error'}`, 'Close', { duration: 5000 });
-        return throwError(() => new Error(error.error?.message || 'Failed to fetch courses'));
+    if (this.coursesCache) {
+      return of(this.coursesCache);
+    }
+
+    return this.coursesRefresh$.pipe(
+      switchMap(() =>
+        this.http.get<Course[]>(`${this.apiUrl}/courses`).pipe(
+          map(courses => courses || []),
+          tap(courses => {
+            this.coursesCache = courses;
+          }),
+          catchError(error => {
+            console.error('Courses API Error:', error);
+            this.snackBar.open(`Error fetching courses: ${error.error?.message || 'Unknown error'}`, 'Close', { duration: 5000 });
+            return throwError(() => new Error(error.error?.message || 'Failed to fetch courses'));
+          })
+        )
+      ),
+      shareReplay(1)
+    );
+  }
+
+  clearCoursesCache(): void {
+    this.coursesCache = null;
+    this.coursesRefresh$.next();
+  }
+
+  getHighestEnrolledCourses(): Observable<HighestEnrollmentDTO[]> {
+    if (this.highestEnrollmentsCache) {
+      return of(this.highestEnrollmentsCache);
+    }
+
+    return this.highestEnrollmentsRefresh$.pipe(
+      switchMap(() =>
+        this.http.get<HighestEnrollmentDTO[]>(`${this.apiUrl}/courses/highest-enrolled-users-count`).pipe(
+          map(enrollments => enrollments || []),
+          tap(enrollments => {
+            this.highestEnrollmentsCache = enrollments;
+          }),
+          catchError(error => {
+            console.error('Highest Enrolled Courses API Error:', error);
+            this.snackBar.open(`Error fetching highest enrolled courses: ${error.error?.message || 'Unknown error'}`, 'Close', { duration: 5000 });
+            return of([]);
+          }),
+          shareReplay(1)
+        )
+      )
+    );
+  }
+
+  getEnrolledCourses(): Observable<Enrollment[]> {
+    return this.authService.isAuthenticated$().pipe(
+      switchMap(isAuthenticated => {
+        if (!isAuthenticated) return of([]);
+
+        if (this.enrollmentCache) return of(this.enrollmentCache);
+
+        return this.enrollmentRefresh$.pipe(
+          switchMap(() =>
+            this.http.get<Enrollment[]>(`${this.apiUrl}/courses/enrolled-courses`).pipe(
+              switchMap(enrollments => {
+                // Fetch course details to get instructorId and instructor
+                return this.getCourses().pipe(
+                  map(courses => {
+                    const cleaned = (enrollments || []).map(e => {
+                      const course = courses.find(c => c.id === e.courseId);
+                      return {
+                        username: e.username || '',
+                        courseId: Number(e.courseId),
+                        courseName: e.courseName || '',
+                        body: course?.body || '',
+                        price: course?.price ?? 0,
+                        imageUrl: course?.imageUrl || '',
+                        instructorId: course?.instructorId ?? null,
+                        instructor: course?.instructor || 'Unknown Instructor'
+                      };
+                    });
+                    this.enrollmentCache = cleaned;
+                    return cleaned;
+                  })
+                );
+              }),
+              catchError(error => {
+                console.error('Enrolled Courses API Error:', error);
+                if (error.status === 403) {
+                  this.snackBar.open('Access denied: Please log in.', 'Close', { duration: 5000 });
+                }
+                return of([]);
+              }),
+              shareReplay(1)
+            )
+          )
+        );
       })
     );
   }
@@ -47,6 +143,9 @@ export class CourseService {
           return throwError(() => new Error('User not authenticated'));
         }
         return this.http.post<{ message: string, data: Course }>(`${this.apiUrl}/courses`, course).pipe(
+          tap(() => {
+            this.clearCoursesCache();
+          }),
           catchError(error => {
             console.error('Add Course API Error:', error);
             this.snackBar.open(`Error adding course: ${error.error?.message || 'Unknown error'}`, 'Close', { duration: 5000 });
@@ -56,33 +155,36 @@ export class CourseService {
       })
     );
   }
-updateCourse(course: Course): Observable<{ message: string, data: Course }> {
-  return this.authService.isAuthenticated$().pipe(
-    switchMap(isAuthenticated => {
-      if (!isAuthenticated) {
-        this.snackBar.open('Please log in to update a course.', 'Close', { duration: 5000 });
-        return throwError(() => new Error('User not authenticated'));
-      }
 
-      const courseDTO = {
-        title: course.title,
-        price: course.price,
-        body: course.body,
-        imageUrl: course.imageUrl
-      };
+  updateCourse(course: Course): Observable<{ message: string, data: Course }> {
+    return this.authService.isAuthenticated$().pipe(
+      switchMap(isAuthenticated => {
+        if (!isAuthenticated) {
+          this.snackBar.open('Please log in to update a course.', 'Close', { duration: 5000 });
+          return throwError(() => new Error('User not authenticated'));
+        }
 
-      return this.http.put<{ message: string, data: Course }>(`${this.apiUrl}/courses/${course.id}`, courseDTO).pipe(
-        catchError(error => {
-          console.error('Update Course API Error:', error);
-          this.snackBar.open(`Error updating course: ${error.error?.message || 'Unknown error'}`, 'Close', { duration: 5000 });
-          return throwError(() => new Error(error.error?.message || 'Failed to update course'));
-        })
-      );
-    })
-  );
-}
+        const courseDTO = {
+          title: course.title,
+          price: course.price,
+          body: course.body,
+          imageUrl: course.imageUrl,
+          instructor: course.instructor
+        };
 
-
+        return this.http.put<{ message: string, data: Course }>(`${this.apiUrl}/courses/${course.id}`, courseDTO).pipe(
+          tap(() => {
+            this.clearCoursesCache();
+          }),
+          catchError(error => {
+            console.error('Update Course API Error:', error);
+            this.snackBar.open(`Error updating course: ${error.error?.message || 'Unknown error'}`, 'Close', { duration: 5000 });
+            return throwError(() => new Error(error.error?.message || 'Failed to update course'));
+          })
+        );
+      })
+    );
+  }
 
   deleteCourse(courseId: number): Observable<{ message: string, data: null }> {
     return this.authService.isAuthenticated$().pipe(
@@ -92,6 +194,9 @@ updateCourse(course: Course): Observable<{ message: string, data: Course }> {
           return throwError(() => new Error('User not authenticated'));
         }
         return this.http.delete<{ message: string, data: null }>(`${this.apiUrl}/courses/${courseId}`).pipe(
+          tap(() => {
+            this.clearCoursesCache();
+          }),
           catchError(error => {
             console.error('Delete Course API Error:', error);
             this.snackBar.open(`Error deleting course: ${error.error?.message || 'Unknown error'}`, 'Close', { duration: 5000 });
@@ -170,40 +275,6 @@ updateCourse(course: Course): Observable<{ message: string, data: Course }> {
               finalize(() => this.enrollingCourses.delete(courseId))
             );
           })
-        );
-      })
-    );
-  }
-
-  getEnrolledCourses(): Observable<Enrollment[]> {
-    return this.authService.isAuthenticated$().pipe(
-      switchMap(isAuthenticated => {
-        if (!isAuthenticated) return of([]);
-
-        if (this.enrollmentCache) return of(this.enrollmentCache);
-
-        return this.enrollmentRefresh$.pipe(
-          switchMap(() =>
-            this.http.get<Enrollment[]>(`${this.apiUrl}/courses/enrolled-courses`).pipe(
-              map(enrollments => {
-                const cleaned = (enrollments || []).map(e => ({
-                  username: e.username || '',
-                  courseId: Number(e.courseId),
-                  courseName: e.courseName || ''
-                }));
-                this.enrollmentCache = cleaned;
-                return cleaned;
-              }),
-              catchError(error => {
-                console.error('Enrolled Courses API Error:', error);
-                if (error.status === 403) {
-                  this.snackBar.open('Access denied: Please log in.', 'Close', { duration: 5000 });
-                }
-                return of([]);
-              }),
-              shareReplay(1)
-            )
-          )
         );
       })
     );

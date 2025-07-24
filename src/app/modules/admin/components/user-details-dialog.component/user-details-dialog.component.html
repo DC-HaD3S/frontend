@@ -1,0 +1,65 @@
+
+    <div class="dialog-container">
+      <div class="dialog-header">
+        <h2 mat-dialog-title>
+          <mat-icon class="user-icon">person</mat-icon>
+          User Details
+        </h2>
+      </div>
+
+      <mat-dialog-content class="dialog-content">
+        <div class="user-info-section">
+          <div class="info-card">
+            <mat-icon class="info-icon">account_circle</mat-icon>
+            <div class="info-details">
+              <h3>{{ data.username }}</h3>
+              <p class="email">{{ data.email }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="enrollment-stats">
+          <div class="stat-item">
+            <mat-icon class="stat-icon">school</mat-icon>
+            <div class="stat-content">
+              <span class="stat-number">{{ data.enrolledCourses.length }}</span>
+              <span class="stat-label">Enrolled Course{{ data.enrolledCourses.length !== 1 ? 's' : '' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="courses-section" *ngIf="data.enrolledCourses.length > 0">
+          <h3 class="section-title">
+            <mat-icon>library_books</mat-icon>
+            Enrolled Courses
+          </h3>
+          <div class="courses-list">
+            <div *ngFor="let course of data.enrolledCourses; let i = index" 
+                 class="course-item" 
+                 [style.animation-delay.ms]="i * 100">
+              <div class="course-card">
+                <mat-icon class="course-icon">book</mat-icon>
+                <div class="course-info">
+                  <h4>{{ course.courseName }}</h4>
+                  <p class="course-id">Course ID: {{ course.courseId }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="data.enrolledCourses.length === 0">
+          <mat-icon class="empty-icon">school_off</mat-icon>
+          <h3>No Courses Enrolled</h3>
+          <p>This user hasn't enrolled in any courses yet.</p>
+        </div>
+      </mat-dialog-content>
+
+      <mat-dialog-actions class="dialog-actions">
+        <button mat-button mat-dialog-close class="cancel-button">
+          <mat-icon>close</mat-icon>
+          Close
+        </button>
+
+      </mat-dialog-actions>
+    </div>

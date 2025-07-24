@@ -2,7 +2,7 @@
   <h1>Registered Users</h1>
 
   <div class="controls-container">
-
+    <button mat-raised-button color="primary" (click)="openAddUserDialog()">Add User</button>
 
     <div class="sort-controls">
       <label>Sort By:</label>
@@ -39,9 +39,10 @@
     No users found.
   </div>
 
-  <div *ngIf="!error && filteredUsers.length > pageSize" class="pagination-container">
-    <button [disabled]="currentPage === 0" (click)="prevPage()">Previous</button>
-    <span>Page {{ currentPage + 1 }} of {{ totalPages }}</span>
-    <button [disabled]="currentPage >= totalPages - 1" (click)="nextPage()">Next</button>
-  </div>
+<div *ngIf="!error && filteredUsers.length > pageSize" class="pagination-container styled-paginator">
+  <button class="paginator-button" [disabled]="currentPage === 0" (click)="prevPage()">⬅️ Previous</button>
+  <span class="paginator-info">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+  <button class="paginator-button" [disabled]="currentPage >= totalPages - 1" (click)="nextPage()">Next ➡️</button>
+</div>
+
 </div>
