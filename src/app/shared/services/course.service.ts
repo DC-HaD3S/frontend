@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError, of, BehaviorSubject } from 'rxjs';
 import { map, catchError, switchMap, shareReplay, tap, take, finalize } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -97,7 +97,7 @@ export class CourseService {
 
         return this.enrollmentRefresh$.pipe(
           switchMap(() =>
-            this.http.get<Enrollment[]>(`${this.apiUrl}/courses/enrolled-courses`).pipe(
+            this.http.get<Enrollment[]>(`${this.apiUrl}/courses/enrolled-courses`, { headers: this.authService.getHeaders() }).pipe(
               switchMap(enrollments => {
                 return this.getCourses().pipe(
                   map(courses => {
